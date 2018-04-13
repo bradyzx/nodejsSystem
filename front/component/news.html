@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>User</title>
+    	<link rel="stylesheet" type="text/css" href="../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+	<script type="text/javascript" src="../jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery.serializeJSON/2.9.0/jquery.serializejson.min.js"></script>
+	<script type="text/javascript" src="../jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../xheditor/xheditor-1.2.2.min.js"></script>
+	<script type="text/javascript" src="../xheditor/xheditor_lang/zh-cn.js"></script>
+
+	
+</head>
+<body>
+   <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'north'" style="height:32px">
+        	   <a href="#" id="loadAllDataBtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">所有新闻</a>
+        		<a href="#" id="addBtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加新闻</a>
+        		<!--<a href="#" id="addList" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加分类</a>-->
+        		<!--<a href="#" id="removeList" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除分类</a>-->
+        		<a href="#" id="removesBtn" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除所选</a>
+        		<!--搜索框-->
+			        <input class="easyui-searchbox" data-options="prompt:'Please Input Value',searcher:doSearch" style="width:200px">
+				<!---->
+
+        </div>
+        <div data-options="region:'west',split:true" title="新闻分类" style="width:200px;">
+    		<!--新闻分类界面-->
+    		<ul id="tt"></ul>
+        </div>
+        <div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
+            <table id="dg"></table>
+            <table id="comment"></table>
+            <!--添加，修改新闻-->
+            <div id="dlg" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:400px;padding:10px">
+		        <form id="ff" method="post" style="height: 280px;">
+		            <div style="margin-bottom:20px">
+		            	<!--<input class="easyui-textbox" name="_id"><br />-->
+						<input class="easyui-textbox" name="_id" style="width:100%;" data-options="label:'序号:',required:true">
+		                <input class="easyui-textbox" name="title" style="width:100%" data-options="label:'标题:',required:true">
+		            </div>
+		            <textarea name="text" class="xheditor" rows="10" cols="10" style="width:100%;height:100px;"></textarea>
+		            <!--<div style="margin-bottom:20px">
+		                <input class="easyui-textbox" name="text" style="width:100%;height:60px" data-options="label:'新闻内容:',multiline:true">
+		            </div>-->
+		        </form>
+		        <div style="text-align:center;padding:5px 0">
+		            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">submit</a>
+		            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">clear</a>
+		        </div>
+		    </div>
+		    <!--添加分类-->
+		    <div id="dlist" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true" style="width:400px;height:250px;padding:10px">
+		        <form id="fflist" method="post" style="height: 160px;">
+		            <div style="margin-bottom:20px">
+		                <input class="easyui-textbox" name="text" style="width:100%;height:40px" data-options="label:'新闻类名:',required:true">
+		            </div>
+		            <div style="margin-bottom:20px">
+		                <input class="easyui-textbox" name="type" style="width:100%" data-options="label:'类别:',multiline:true">
+		            </div>
+		        </form>
+		        <div style="text-align:center;padding:5px 0">
+		            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitList()" style="width:80px">submit</a>
+		            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">clear</a>
+		        </div>
+		    </div>
+		    <!--评论模块-->
+		    <div id="commentList" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true,fit:true" style="width:400px;height:250px;padding:10px">
+			    <div data-options="region:'north',title:'North Title',split:true" style="height:32px;">
+			    	<a href="#" id="removeComment" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除评论</a>
+			    </div>
+			    <div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;height: 200px;">
+			    	<table id="dg"></table>
+			    </div>
+			    <div data-options="region:'south',title:'South Title',split:true" style="height:100px;width: 50%;">
+				        <form id="commentForm" method="post" style="height: 250px;">
+				            <div style="margin-top:20px">
+				            	<lable style="vertical-align: top;">评论标题:</lable>
+				                <input class="easyui-textbox" name="title" style="width:90%;height:40px">
+				            </div>
+				            <div style="margin-top:20px">
+								<lable style="vertical-align: top;">评论内容:</lable>
+								<textarea name="text" class="xheditor" rows="10" cols="10" style="width:90%;height:100px;"></textarea>
+				            </div>
+				        </form>
+				        <div style="text-align:center;padding:5px 0">
+				            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitList()" style="width:80px">提交</a>
+				            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearCommentForm()" style="width:80px">重置</a>
+				        </div>
+			    </div>
+		    </div>
+        </div>
+    </div>
+<script>
+   	var cateId = null;
+	$('#tt').tree({
+		url: "http://localhost:3000/cate/list/1",
+		method: 'get',
+		onClick: function(node) {
+			cateId = node._id;
+			console.log(cateId);
+			$("#dg").datagrid({
+				queryParams: {
+					cateid: cateId
+				}
+			}).datagrid('reload');
+		}
+	});
+	
+	//新闻列表
+	$('#dg').datagrid({
+		url: 'http://localhost:3000/news/list',
+		method: 'post',
+		queryParams: {
+			cateid: cateId
+		},
+		fit: true,
+		pagination: true,
+		pageSize: 5,
+		pageList: [5, 10, 15],
+		columns: [
+			[{
+					field: 'ck',
+					title: '复选',
+					checkbox: true
+				},
+				{
+					field: 'title',
+					title: '新闻标题',
+					width: 100
+				},
+				{
+					field: 'comment',
+					title: '评论数',
+					width: 50
+				},
+//				{
+//					field: 'date',
+//					title: '发布时间',
+//					width: 200
+//				},
+				{
+					field: 'operate',
+					title: '操作',
+					width: 130,
+					formatter: function(value, row, index) {
+						return "<a onclick=deleteData('" + row._id + "')>删除</a>  <a onclick=editData('" + row._id + "')>修改</a>  <a onclick=commentData('" + row._id + "')>评论管理</a>"
+					}
+				}
+			]
+		]
+	});
+	
+	
+	
+	//显示评论列表
+	var rowsId = null;
+	var num=0;
+	var commentId=0;
+	function commentData(id) {
+		console.log('----'+id)
+		rowsId = id;
+			$('#commentList').dialog('open');
+			//评论列表
+			com();
+			//后台传来数据
+			$.ajax({
+				type:"post",
+				url:"http://localhost:3000/comment/list",
+				async:true,
+				data:{
+					cateId:rowsId
+				}
+			}).done(function(data){
+				num=data.total;
+				console.log(num);
+			});
+			//点击提交按钮
+}
+	//点击提交评论    数量加+1
+	function submitList () {
+		var postData = $("#commentForm").serializeJSON();
+		console.log(rowsId);
+		postData.cateId=rowsId;
+		console.log(postData);
+		console.log('123456'+commentId);
+		if(commentId.length > 0) {
+			// 修改
+			delete postData.cateId;
+			$.ajax({
+				type: "put",
+				url: "http://localhost:3000/comment/data/" + commentId,
+				data: postData,
+				async: true
+			}).done(function(res) {
+				console.log(res);
+				// 这里要做一件事
+				$.messager.show({
+					title: '信息提示',
+					msg: '数据修改成功',
+					timeout: 3000,
+					showType: 'show'
+				});
+				commentId='';
+				$('#commentList #dg').datagrid('reload');
+				$('#commentForm').form('clear');
+				$('textarea').val('');
+			})
+		}else {
+			//添加
+			$.ajax({
+				type: "post",
+				url: "http://localhost:3000/comment/data",
+				data: postData,
+				async: true
+			}).done(function(res) {
+				// 这里要做一件事
+				$.messager.show({
+					title: '信息提示',
+					msg: '添加分类成功',
+					timeout: 3000,
+					showType: 'show'
+				});
+				$('#commentList #dg').datagrid('reload');
+				$('#commentForm').form('clear');
+				$('textarea').val('');
+			});
+			//数量加1
+			$.ajax({
+				type: "put",
+				url: "http://localhost:3000/news/data/"+rowsId,
+				data: {num:++num},
+				async: true
+			}).then(function (res) {
+				$('#dg').datagrid('reload');
+			});
+		}
+	}
+	//评论列表
+	function com () {
+		$('#commentList #dg').datagrid({
+			url: 'http://localhost:3000/comment/list',
+			method: 'post',
+			queryParams: {
+				cateId: rowsId
+			},
+			fit: true,
+			pagination: true,
+			pageSize: 5,
+			pageList: [5, 10, 15],
+			columns: [
+				[{
+						field: 'ck',
+						title: '复选',
+						checkbox: true
+					},
+					{
+						field: 'title',
+						title: '评论标题',
+						width: 100
+					},
+					{
+						field: 'text',
+						title: '评论内容',
+						width: 50
+					},
+					{
+						field: 'operate',
+						title: '操作',
+						width: 130,
+						formatter: function(value, row, index) {
+							return " <a onclick=editCommentData('" + row._id + "')>修改</a>  "
+						}
+					}
+				]
+			]
+		});
+	}
+	
+	
+	//添加新闻
+	$("#addBtn").click(function() {
+		$('#ff').form('clear');
+		if(cateId === null) {
+			$.messager.show({
+				title: '信息提示',
+				msg: '请选择分类，否则无法添加新闻',
+				timeout: 3000,
+				showType: 'show'
+			});
+		} else {
+			$('#dlg').dialog('open');
+		}
+	})
+	
+	
+	//提交按钮
+	function submitForm() {
+		var postData = $("#ff").serializeJSON();
+		postData.cateid = cateId;
+		if(postData._id.length > 0) {
+			delete postData.cateid;
+			// edit 信息修改
+			$.ajax({
+				type: "put",
+				url: "http://localhost:3000/news/data/" + postData._id,
+				data: postData,
+				async: true
+			}).done(function(res) {
+				console.log(res);
+				// 这里要做一件事
+				$.messager.show({
+					title: '信息提示',
+					msg: '数据修改成功',
+					timeout: 3000,
+					showType: 'show'
+				});
+				clearForm();
+				$('#dlg').dialog('close');
+				$('#dg').datagrid('reload');
+			})
+	
+		} else {
+			// add 信息添加
+			delete postData._id;
+			$.ajax({
+				type: "post",
+				url: "http://localhost:3000/news/data",
+				data: postData,
+				async: true
+			}).done(function(res) {
+				// 这里要做一件事
+				$.messager.show({
+					title: '信息提示',
+					msg: '数据添加成功',
+					timeout: 3000,
+					showType: 'show'
+				});
+				$('#dlg').dialog('close');
+				$('#dg').datagrid('reload');
+			})
+		}
+	
+	}
+	
+	function clearForm() {
+		$('#ff').form('clear');
+	}
+	
+	function deleteData(id) {
+		$.messager.confirm('确认删除', '你确认删除数据吗？', function(r) {
+			if(r) {
+				$.ajax({
+					type: "delete",
+					url: "http://localhost:3000/news/data/" + id,
+					async: true
+				}).done(function(res) {
+					$("#dg").datagrid('reload');
+				})
+			}
+		});
+	}
+	//评论修改按钮
+	function editCommentData(id) {
+		$.ajax({
+			type: "put",
+			url: "http://localhost:3000/comment/data/" + id,
+			async: true
+		}).done(function(res) {
+			commentId=id;
+			$('#commentForm').form('load', res);
+		})
+	}
+	
+	//删除评论
+	$("#removeComment").click(function() {
+		var rows = $("#commentList #dg").datagrid('getSelections');
+		if(rows.length > 0) {
+			$.messager.confirm('确认删除', '你确认删除数据吗？', function(r) {
+				if(r) {
+					var ids = [];
+					rows.forEach(function(item, idx) {
+						ids.push(item._id)
+					})
+					console.log(ids);
+					//删除评论表
+					$.ajax({
+						type: "post",
+						url: "http://localhost:3000/comment/data/removes",
+						data: {
+							ids: ids.toString()
+						},
+						async: true
+					}).done(function(res) {
+						$("#commentList #dg").datagrid('reload');
+					});
+					//数量减去
+					$.ajax({
+						type: "put",
+						url: "http://localhost:3000/news/data/"+rowsId,
+						data: {num:num-rows.length},
+						async: true
+					}).then(function (res) {
+						$('#dg').datagrid('reload');
+					});
+				}
+			});
+		}
+	})
+	
+	function editData(id) {
+		$.ajax({
+			type: "put",
+			url: "http://localhost:3000/news/data/" + id,
+			async: true
+		}).done(function(res) {
+			$('#ff').form('load', res);
+			$('#dlg').dialog('open');
+		})
+	}
+	
+	
+	//删除多条新闻
+	$("#removesBtn").click(function() {
+		var rows = $("#dg").datagrid('getSelections');
+		if(rows.length > 0) {
+			$.messager.confirm('确认删除', '你确认删除数据吗？', function(r) {
+				if(r) {
+					var ids = [];
+					rows.forEach(function(item, idx) {
+						ids.push(item._id)
+					})
+					console.log(ids);
+					$.ajax({
+						type: "post",
+						url: "http://localhost:3000/news/removes",
+						data: {
+							ids: ids.toString()
+						},
+						async: true
+					}).done(function(res) {
+						$("#dg").datagrid('reload');
+					})
+				}
+			});
+		}
+	})
+	
+	
+	$("#loadAllDataBtn").click(function() {
+		cateId = null;
+		$("#dg").datagrid({
+			queryParams: {
+				cateid: cateId
+			}
+		}).datagrid('reload');
+	})
+	
+	function doSearch(value) {
+		$("#dg").datagrid({
+			queryParams: {
+				cateid: cateId,
+				title: value
+			}
+		}).datagrid('reload');
+	}
+	
+	//重置评论
+	function clearCommentForm () {
+		$('#commentList #dg').datagrid('reload');
+		$('#commentForm').form('clear');
+		$('textarea').val('');
+	}
+</script>
+</body>
+</html>

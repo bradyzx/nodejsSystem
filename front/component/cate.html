@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>User</title>
+    	<link rel="stylesheet" type="text/css" href="../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+	<script type="text/javascript" src="../jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery.serializeJSON/2.9.0/jquery.serializejson.min.js"></script>
+	<script type="text/javascript" src="../jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../xheditor/xheditor-1.2.2.min.js"></script>
+	<script type="text/javascript" src="../xheditor/xheditor_lang/zh-cn.js"></script>
+
+	
+</head>
+<body>
+   <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'north'" style="height:38px">
+        	   <a href="#" id="loadAllDataBtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">所有分类</a>
+        		<a href="#" id="addBtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加分类</a>
+        		<a href="#" id="changeBtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">切换分类</a>
+        		<!--<a href="#" id="addList" class="easyui-linkbutton" data-options="iconCls:'icon-add'">添加分类</a>-->
+        		<!--<a href="#" id="removeList" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除分类</a>-->
+        		<a href="#" id="removesBtn" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">删除所选</a>
+        		<!--搜索框-->
+			        <!--<input class="easyui-searchbox" data-options="prompt:'Please Input Value',searcher:doSearch" style="width:200px">-->
+				<!---->
+        </div>
+        <div data-options="fit:true" title="新闻分类" style="width:200px;margin-top: 40px;">
+    		<!--新闻分类界面-->
+    		<ul id="tt"></ul>
+        </div>
+        <!--添加分类-->
+	    <div id="dlist" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true" style="width:400px;height:250px;padding:10px">
+	        <form id="fflist" method="post" style="height: 160px;">
+	            <div style="margin-bottom:20px">
+	                <input class="easyui-textbox" name="text" style="width:100%;height:40px" data-options="label:'类名:',required:true">
+	            </div>
+	            <div style="margin-bottom:20px">
+	                <input class="easyui-textbox" name="type" style="width:100%" data-options="label:'类别:',required:true">
+	            </div>
+	        </form>
+	        <div style="text-align:center;padding:5px 0">
+	            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitList()" style="width:80px">submit</a>
+	            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">clear</a>
+	        </div>
+	    </div>
+    </div>
+<script>
+   	var cateId = null;
+   	var type =1;
+   	//切换分类
+	$('#changeBtn').click(function() {
+		if(type == 1){
+			type=2;
+		}else{
+			type=1;
+		}
+		console.log(type);
+		$('#tt').tree({
+			url: "http://localhost:3000/cate/list"+'/'+type,
+			method: 'get',
+			onClick: function(node) {
+				cateId = node._id;
+				console.log(cateId);
+			}
+		});
+	});
+	$('#tt').tree({
+		url: "http://localhost:3000/cate/list"+'/'+type,
+		method: 'get',
+		onClick: function(node) {
+			cateId = node._id;
+			console.log(cateId);
+		}
+	});
+	
+//添加分类
+	$("#addBtn").click(function() {
+		$('#fflist').form('clear');
+		if(cateId === null) {
+			$.messager.show({
+				title: '信息提示',
+				msg: '请选择根目录，否则无法添加分类',
+				timeout: 3000,
+				showType: 'show'
+			});
+		} else {
+			$('#dlist').dialog('open');
+		}
+	})
+	//添加分类提交
+	function submitList () {
+		var postData = $("#fflist").serializeJSON();
+		postData.parentId = cateId;
+		// add 信息添加
+		delete postData._id;
+		$.ajax({
+			type: "post",
+			url: "http://localhost:3000/cate/data",
+			data: postData,
+			async: true
+		}).done(function(res) {
+			// 这里要做一件事
+			$.messager.show({
+				title: '信息提示',
+				msg: '添加分类成功',
+				timeout: 3000,
+				showType: 'show'
+			});
+			$('#dlist').dialog('close');
+			$('#tt').tree('reload');
+		})
+	}	
+	
+	$("#loadAllDataBtn").click(function() {
+		$('#tt').tree('reload');
+		
+	})
+	/*
+	function doSearch(value) {
+		$("#dg").datagrid({
+			queryParams: {
+				text: value
+			}
+		}).tree('reload');
+	}*/
+	//删除分类
+	$("#removesBtn").click(function() {
+		if(cateId !== null) {
+			$.messager.confirm('确认删除', '你确认删除数据吗？', function(r) {
+				if(r) {
+					$.ajax({
+						type: "delete",
+						url: "http://localhost:3000/cate/data/"+cateId,
+						async: true
+					}).done(function(res) {
+						// 这里要做一件事
+						$.messager.show({
+							title: '信息提示',
+							msg: '分类删除成功',
+							timeout: 3000,
+							showType: 'show'
+						});
+						$('#tt').tree('reload');
+					})
+				}
+			});
+		}
+	})
+</script>
+</body>
+</html>

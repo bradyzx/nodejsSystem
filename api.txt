@@ -1,0 +1,18 @@
+admin 
+    user
+    post        http://localhost:3000/user/data(新增)        name,password....
+    put         http://localhost:3000/user/data/id(修改)
+    delete      http://localhost:3000/user/data/id(删除)
+    post        http://localhost:3000/user/data/id(查询)     page,limit
+    
+news
+    post        http://localhost:3000/news/data(新增)        
+    put         http://localhost:3000/news/data/id(修改)
+    delete      http://localhost:3000/news/data/id(删除)
+    post        http://localhost:3000/news/data/id(查询)     
+
+Cate
+    post        http://localhost:3000/Cate/data(新增)        
+    put         http://localhost:3000/Cate/data/id(修改)
+    delete      http://localhost:3000/Cate/data/id(删除)
+    post        http://localhost:3000/Cate/data/id(查询)    
